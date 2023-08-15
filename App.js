@@ -7,6 +7,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [items, setItems] = useState([]);
+  
 
   useEffect(() => {
     fetch("http://localhost:8000/message")
@@ -37,7 +38,7 @@ function App() {
     return [];
   }
     return items.filter((item) =>
-    item.nama.toLowerCase().includes(searchTerm.toLowerCase())
+    item.namaPenyakit.toLowerCase().includes(searchTerm.toLowerCase())
   );
   }, [items, searchTerm]);
 
@@ -45,7 +46,6 @@ function App() {
 
   // New list of resulted item IDs
   const resultedItemIds = filteredItems.map((item) => item.Id);
-
 
   return (
 
@@ -69,15 +69,15 @@ function App() {
         />
 
         <ul className="w3-ul w3-card">
-  {Array.from(new Set(filteredItems.map((item) => item.nama))).map((nama) => {
-    const uniqueItem = filteredItems.find((item) => item.nama === nama);
+  {Array.from(new Set(filteredItems.map((item) => item.namaPenyakit))).map((namaPenyakit) => {
+    const uniqueItem = filteredItems.find((item) => item.namaPenyakit === namaPenyakit);
     return (
       <li key={uniqueItem.id} style={{ border: '1px solid #ccc', marginBottom: '10px', padding: '10px' }}>
         <div className="item-container">
           <img src={uniqueItem.thumbnailUrl} alt={uniqueItem.name} className="thumbnail" />
           <div>
-            <h3>{uniqueItem.nama}</h3>
-            <p>{uniqueItem.description}</p>
+            <h3>{uniqueItem.namaPenyakit}</h3>
+            <p>{uniqueItem.DeskripsiGejala}</p>
           </div>
         </div>
       </li>
@@ -89,16 +89,21 @@ function App() {
 <div className="w3-container w3-card">
   <h2 style={{ color: '#edf7f7', background: '#d15890'}}>Daftar Obat</h2>
   <ul className="w3-ul w3-card">
-    {Array.from(new Set(filteredItems.map((item) => item.nama))).map((nama) => {
-      const uniqueItems = filteredItems.filter((item) => item.nama === nama);
+    {Array.from(new Set(filteredItems.map((item) => item.namaPenyakit))).map((namaPenyakit) => {
+      const uniqueItems = filteredItems.filter((item) => item.namaPenyakit === namaPenyakit);
       return (
         <li key={uniqueItems[0].id}>
           <div className="item-container">
-            <h3>{nama}</h3>
+            <h3>{namaPenyakit}</h3>
             {uniqueItems.map((item) => (
-              <div key={item.Id}>
-                <p>ID: {item.Id}, Nama Obat: {item['Nama Obat']},Ukuran: {item.Ukuran}</p>
+              <div key={item.idObat}>
                
+                <p>
+                ID: {item.idObat}, Nama Obat: {item['namaObat']}, Ukuran: {item.dosis}, tipe: {item.tipe}
+                {item.namaDokter ? <span className="sparkling-text"><span style={{ color: 'purple' }}> recommended: {item.namaDokter}</span> </span> : ''}
+                 {item.klinik ? <span className="sparkling-text"><span style={{ color: 'purple' }}>klinik: {item.klinik}</span></span> : ''}
+                </p>
+
               </div>
             ))}
           </div>
