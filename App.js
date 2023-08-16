@@ -7,7 +7,10 @@ function App() {
   const [message, setMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [items, setItems] = useState([]);
-  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showsearchQuery, setShowSearchQuery] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:8000/message")
@@ -31,8 +34,30 @@ function App() {
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+    setShowSearchQuery(true);
   };
 
+  const handleSearchPrediction = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/searchObat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: searchQuery }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSearchResults(data.prediction);
+        setShowSearchResults(true);
+      } else {
+        console.error('Failed to fetch data:', response.status);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
   const filteredItems = useMemo(() => {
     if (!items || items.length === 0) {
     return [];
@@ -47,6 +72,7 @@ function App() {
   // New list of resulted item IDs
   const resultedItemIds = filteredItems.map((item) => item.Id);
 
+  
   return (
 
     <div style={{ backgroundImage: "url(/obat.PNG)", backgroundSize: 'cover'
@@ -85,7 +111,7 @@ function App() {
   })}
 </ul>
 </div>
-
+{showsearchQuery && (
 <div className="w3-container w3-card">
   <h2 style={{ color: '#edf7f7', background: '#d15890'}}>Daftar Obat</h2>
   <ul className="w3-ul w3-card">
@@ -100,7 +126,7 @@ function App() {
                
                 <p>
                 ID: {item.idObat}, Nama Obat: {item['namaObat']}, Ukuran: {item.dosis}, tipe: {item.tipe}
-                {item.namaDokter ? <span className="sparkling-text"><span style={{ color: 'purple' }}> recommended: {item.namaDokter}</span> </span> : ''}
+                {item.namaDokter ? <span className="sparkling-text"><span style={{ color: 'purple' }}> diresepkan oleh: {item.namaDokter}</span> </span> : ''}
                  {item.klinik ? <span className="sparkling-text"><span style={{ color: 'purple' }}>klinik: {item.klinik}</span></span> : ''}
                 </p>
 
@@ -111,7 +137,28 @@ function App() {
       );
     })}
   </ul>
-  </div>
+  </div>)}
+  <div className="w3-container w3-card">
+      <h2 style={{ color: '#edf7f7', background: '#d15890'}}>Cek Rekomendasi</h2>
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      <button onClick={handleSearchPrediction}>Cari</button>
+       <div>
+        {showSearchResults && ( // Conditionally render search results
+          <div>
+            <h2 style={{ color: '#edf7f7', background: '#d15890'}}>Hasil</h2>
+            <ul>
+              {searchResults.map((result, index) => (
+                <li key={index}>{result}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
 </div>
   );
 }
