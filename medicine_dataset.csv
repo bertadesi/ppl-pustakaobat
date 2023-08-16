@@ -1,0 +1,11 @@
+feature,target_disease
+rifampicin isoniazid  ,Tuberculosis
+pyrazinamide ethambutol ,Tuberculosis
+isoniazid ethambutol, Tuberculosis
+pyrazinamide isoniazid,Tuberculosis
+paracetamol ibuprofen,Headache
+aspirin caffeine,Headache
+losartan  hydrochlorothiazide,Hypertension
+potassium hydrochlorothiazide, Hypertension
+omeprazole ranitidine, GERD
+lansoprazole omeprazole,GERD
