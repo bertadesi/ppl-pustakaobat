@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
+const axios = require('axios');
+
 
 
 const app = express();
@@ -14,6 +16,23 @@ app.use(express.json());
 app.get('/message', (req, res) => {
   res.json({ message: "Pustaka Obat" });
 });
+
+
+app.post('/searchObat', async (req, res) => {
+  try {
+    const { query } = req.body;
+    const flaskBackendURL = 'http://127.0.0.1:5000/predict'; // Replace with your Flask backend URL
+
+    const flaskResponse = await axios.post(flaskBackendURL, { query });
+    const data = flaskResponse.data;
+    console.log(data);
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
+
 
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -45,6 +64,8 @@ const query = `
     return res.json(results);
   });
 });
+
+
 
 
 
